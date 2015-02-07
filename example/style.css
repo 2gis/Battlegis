@@ -1,0 +1,249 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    background: #333;
+    }
+
+.tabs {
+    position: absolute;
+    z-index: 1;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    }
+    .tabs__tab {
+        position: relative;
+        background: rgba(163, 204, 78, .6);
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        }
+    .tabs__tab:first-of-type {
+        border-radius: 3px 3px 0 0;
+        }
+    .tabs__tab:last-of-type {
+        border-radius: 0 0 3px 3px;
+        }
+    .tabs__tab:hover,
+    .tabs__tab._opened {
+        background: rgba(163, 204, 78, 1);
+        }
+        .tabs__tab:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 100%;
+            }
+        .tabs__game:before {
+            background-image: url('assets/score.svg');
+            width: 24px;
+            height: 24px;
+            top: 4px;
+            left: 4px;
+            }
+        .tabs__ai:before {
+            background-image: url('assets/brain.svg');
+            }
+        .tabs__map:before {
+            background-image: url('assets/tank.svg');
+            }
+
+.map {
+    display: none;
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    background: #000;
+    transform-origin: 50% 0;
+    }
+.map._opened {
+    display: block;
+    }
+
+.player {
+    position: absolute;
+    width: 23px;
+    height: 23px;
+    background-color: #fcc;
+    transition:
+        top .2s linear,
+        left .2s linear;
+    }
+.player._0 {
+    background-color: #f99;
+    color: #f99;
+    }
+.player._1 {
+    background-color: #9f9;
+    color: #9f9;
+    }
+.player._2 {
+    background-color: #88f;
+    color: #88f;
+    }
+.player._3 {
+    background-color: #ff8;
+    color: #ff8;
+    }
+.player._4 {
+    background-color: #f8f;
+    color: #f8f;
+    }
+.player._5 {
+    background-color: #8ff;
+    color: #8ff;
+    }
+.player._6 {
+    background-color: #f88;
+    color: #f88;
+    }
+.player._7 {
+    background-color: #f98;
+    color: #f98;
+    }
+.player._8 {
+    background-color: #9f8;
+    color: #9f8;
+    }
+.player._dima {
+    background: #afa;
+    }
+.player._killed {
+    opacity: .3;
+    background: red;
+    transform: scale(1.4);
+    transition:
+        opacity .3s,
+        transform .3s;
+    }
+    .player:before {
+        content: attr(data-name);
+        position: absolute;
+        top: -12px;
+        left: 100%;
+        font-size: 11px;
+        font-family: Arial;
+        color: inherit;
+        transform: rotate(-33deg);
+        }
+    .player:after {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        width: 25px;
+        height: 25px;
+        background-image: url('assets/tank2.png');
+        background-size: 100% 100%;
+        }
+    .player._left:after {
+        transform: rotate(-90deg);
+        }
+    .player._right:after {
+        transform: rotate(90deg);
+        }
+    .player._down:after {
+        transform: rotate(180deg);
+        }
+    .player__health {
+        position: absolute;
+        top: -6px;
+        width: 100%;
+        height: 2px;
+        background: red;
+        }
+    .player__aura {
+        display: none;
+        position: absolute;
+        border: 1px solid #fff;
+        border-radius: 50%;
+        width: 150%;
+        height: 150%;
+        top: -30%;
+        left: -30%;
+        }
+    .player._immortal .player__aura {
+        display: block;
+        }
+
+.shell {
+    position: absolute;
+    z-index: 1;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background: #f00;
+    transition: all .2s linear;
+    }
+
+.game {
+    z-index: 1;
+    position: absolute;
+    top: 16px;
+    right: 64px;
+    width: 300px;
+    display: none;
+    }
+.game._opened {
+    display: block;
+    padding: 24px;
+    background: rgba(255, 255, 255, .2);
+    }
+    .game__url {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 4px 10px;
+        }
+    .game__score {
+        opacity: .8;
+        position: relative;
+        width: 300px;
+        font-family: Arial;
+        }
+        .game__scoreRow {
+            display: flex;
+            background: #ddd;
+            padding: 1px;
+            }
+            .game__scoreCell {
+                width: 33%;
+                flex: 1 1 auto;
+                flex-direction: row;
+                background: rgba(255, 255, 255, .2);
+                padding: 4px 10px;
+                }
+
+.ai {
+    /*display: none;*/
+    z-index: 1;
+    position: absolute;
+    top: 24px;
+    left: 624px;
+    height: 500px;
+    width: 600px;
+    padding: 24px;
+    background: rgba(255, 255, 255, .2);
+    box-sizing: border-box;
+    }
+.ai._opened {
+    display: block;
+    }
+    .ai__textfield {
+        border: 0;
+        padding: 4px 10px;
+        box-shadow: 0 0 3px rgba(0, 0, 0, .1) inset;
+        margin: 0 10px 10px 0;
+        }
+    .ai__function {
+        position: absolute;
+        border: 0;
+        padding: 0;
+        top: 24px;
+        left: 24px;
+        width: 552px;
+        bottom: 24px;
+        font-family: 'Courier New';
+        }

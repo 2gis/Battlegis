@@ -1,0 +1,29 @@
+{
+  "name": "tanks",
+  "version": "0.0.1",
+  "description": "realtime js ai engine",
+  "repository": "git@github.com:diokuz/battlegis.git",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Diokuz",
+  "license": "MIT",
+  "dependencies": {
+    "ace": "git://github.com/ajaxorg/ace-builds.git#a4e495d8901876c6bafe3870a35cb8e32c827e97",
+    "body-parser": "^1.10.1",
+    "express": "^4.10.7",
+    "line-intersect": "^1.0.0",
+    "lodash": "^2.4.1",
+    "pixi.js": "git://github.com/GoodBoyDigital/pixi.js",
+    "robust-segment-intersect": "^1.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.1",
+    "flat-glob": "0.0.1",
+    "glob": "^4.3.5",
+    "gulp": "^3.8.10",
+    "vinyl-source-stream": "^1.0.0"
+  },
+  "browser": "./example/client.js"
+}
