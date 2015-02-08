@@ -186,7 +186,7 @@ $(function() {
         requestAnimationFrame(animationFrame);
     }
 
-    var level = 7;
+    var level = 6;
     game.level(level);
 
     game.on('levelComplete', function(e) {

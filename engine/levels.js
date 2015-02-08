@@ -228,13 +228,19 @@ module.exports = {
             spawn: 0
         }, {
             name: 'chicken',
-            ai: 'chicken',
+            ai: 'noop',
             spawn: 1,
             immortal: 0,
             lives: 1
         }],
+        powerups: [{
+            type: '2gisDamage',
+            leading: true,
+            x: 30,
+            y: 40
+        }],
         success: function(frame) {
-            return frame && frame.players[0].gisDamage;
+            return frame && frame.players[0]['2gisDamage'];
         }
     },
 

@@ -22,6 +22,8 @@ var Engine = function(config) {
     gameHistory.bots = {};
 };
 
+var powerupCode = require('./powerup');
+
 Engine.prototype = {};
 
 // Инициализация игры: загрузка ботов, конфига
@@ -49,6 +51,18 @@ Engine.prototype.level = function(levelName) {
 
     _.each(level.bots, function(bot) {
         this.spawn(_.clone(bot));
+    }, this);
+
+    // Спавним поверапы
+    this.map.powerups = this.map.powerups || [];
+    _.each(level.powerups, function(powerupCfg) {
+        var powerup = _.cloneDeep(powerupCfg);
+        powerup = _.defaults(powerup, powerupCode.config[powerupCfg.type] || {});
+
+        if (powerup.leading) powerup.appearIn = 0; // Ставим перк на карту сразу
+        else powerup.appearIn = powerup.timeout;
+
+        this.map.powerups.push(powerup);
     }, this);
 
     this.success = level.success || _.noop;
@@ -145,6 +159,7 @@ Engine.prototype.respawn = function(bot) {
     bot.armed = 30;
     bot.stamina = 30;
     bot.immortal = this.config.immortal; // Тиков до отключения бессмертия
+    bot.powerups = {};
 };
 
 // Добавление бота в игру
@@ -168,6 +183,7 @@ Engine.prototype.addBot = function(params) {
         armed: 30,
         gear: 0,
         stamina: 30,
+        powerups: {},
         immortal: _.isNumber(params.immortal) ? params.immortal : this.config.immortal,
         spawn: params.spawn,
         lives: params.lives
@@ -310,6 +326,9 @@ Engine.prototype.playersPositions = function() {
             bot.y = bot.instance.y = y;
         }
 
+        // Захват перков
+        this.powerupsStatus(bot);
+
         bot.gear -= 2;
         if (bot.gear < 5) bot.gear = 5;
 
@@ -329,6 +348,8 @@ Engine.prototype.playersPositions = function() {
         bot.instance.stamina = bot.stamina;
     }, this);
 };
+
+Engine.prototype.powerupsStatus = powerupCode.status;
 
 // Выполнение ИИ функций ботов
 Engine.prototype.ai = function() {
@@ -377,9 +398,14 @@ Engine.prototype.replaceAI = function(name, str) {
 Engine.prototype.push = function() {
     gameHistory.frames = gameHistory.frames || [];
 
+    var historyKeys = ['id', 'name', 'x', 'y', 'kill', 'death', 'direction', 'health', 'ticksToRespawn', 'immortal'];
+
     // Делаем копии игроков и снарядов с выбранными полями для сохранения в историю
     var players = _.map(this.bots, function(bot) {
-        return _.pick(bot, ['id', 'name', 'x', 'y', 'kill', 'death', 'direction', 'health', 'ticksToRespawn', 'immortal']);
+        var botCopy = _.pick(bot, historyKeys);
+        botCopy.powerups = _.cloneDeep(bot.powerups);
+
+        return botCopy;
     });
     players = _.compact(players);
 
@@ -394,12 +420,20 @@ Engine.prototype.push = function() {
         return result;
     }, []);
 
+    var powerups = _.map(this.map.powerups, function(powerup) {
+        var out = {};
+        out[powerup.type] = powerup.appearIn == 0;
+        return out;
+    });
+
     // Сохраняем в историю (в кадр) все данные чтоб потом их можно было передать клиенту
     var frame = {
         players: players,
         shells: shells,
+        powerups: powerups,
         time: Date.now()
-    }
+    };
+
     gameHistory.frames.push(frame);
     this.update(this.get({
         since: frame.time - 1 // вернёт только последний фрейм

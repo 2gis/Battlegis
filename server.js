@@ -3,13 +3,13 @@ var bodyParser = require('body-parser'); // Для распарсивания PO
 var app = express();
 
 var auth = require('./auth');
-var Engine = require('./engine');
+var Battlegis = require('./engine');
 var config = require('./config');
 
-var engine = new Engine(config);
-
-// engine.init();
-// engine.run();
+// var game = new Battlegis(config);
+// game.level(6);
+// game.run();
+// game.stop();
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
