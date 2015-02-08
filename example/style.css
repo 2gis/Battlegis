@@ -244,6 +244,11 @@ html, body {
         top: 24px;
         left: 24px;
         width: 552px;
-        bottom: 24px;
+        bottom: 48px;
         font-family: 'Courier New';
+        }
+    .ai__send {
+        position: absolute;
+        bottom: 24px;
+        height: 20px;
         }

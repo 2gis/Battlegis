@@ -26,6 +26,7 @@ Engine.prototype = {};
 
 // Инициализация игры: загрузка ботов, конфига
 Engine.prototype.level = function(levelName) {
+    this._levelName = levelName;
     var levels = require('./levels');
     var level = levels[levelName];
 
@@ -50,8 +51,13 @@ Engine.prototype.level = function(levelName) {
         this.spawn(_.clone(bot));
     }, this);
 
-    this.end = level.end || _.noop;
+    this.success = level.success || _.noop;
     this.stage = 1;
+};
+
+Engine.prototype.restart = function() {
+    this.emit('levelRestart');
+    this.level(this._levelName);
 };
 
 // Запуск игры
@@ -62,7 +68,7 @@ Engine.prototype.run = function(config) {
 
     function tick() {
         // Расчет перемещений всех объектов на карте
-        if (this.end(_.last(gameHistory.frames))) {
+        if (this.success(_.last(gameHistory.frames), this.map)) {
             this.stage = 10;
             this.emit('levelComplete');
         }
