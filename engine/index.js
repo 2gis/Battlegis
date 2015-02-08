@@ -142,7 +142,8 @@ Engine.prototype.respawn = function(bot) {
 
     this._chooseSpawnPoint(bot);
     bot.health = 100;
-    bot.armed = 10;
+    bot.armed = 30;
+    bot.stamina = 30;
     bot.immortal = this.config.immortal; // Тиков до отключения бессмертия
 };
 
@@ -164,8 +165,9 @@ Engine.prototype.addBot = function(params) {
         death: params.death,
         eachSegment: botUtils.eachSegment,
         health: 100,
-        armed: 10,
+        armed: 30,
         gear: 0,
+        stamina: 30,
         immortal: _.isNumber(params.immortal) ? params.immortal : this.config.immortal,
         spawn: params.spawn,
         lives: params.lives
@@ -281,7 +283,7 @@ Engine.prototype.playersPositions = function() {
         }
 
         // Тяга
-        var traction = [bot.angle[0] * bot.gear, bot.angle[1] * bot.gear];
+        var traction = [bot.angle[0] * bot.gear / 5, bot.angle[1] * bot.gear / 5];
         bot.vector[0] = (inertion * bot.vector[0] + traction[0]) / (inertion + 1);
         bot.vector[1] = (inertion * bot.vector[1] + traction[1]) / (inertion + 1);
         if (Math.abs(bot.vector[0] - traction[0]) < .1) bot.vector[0] = traction[0];
@@ -308,12 +310,23 @@ Engine.prototype.playersPositions = function() {
             bot.y = bot.instance.y = y;
         }
 
+        bot.gear -= 2;
+        if (bot.gear < 5) bot.gear = 5;
+
         bot.armed++;
-        if (bot.armed > 30) {
-            bot.armed = 30;
+        if (bot.armed > 30) bot.armed = 30;
+
+        // Пока зажата кнопка ускорения, стамина не восстанавливается + ещё 10 тиков
+        if (bot.runPressed > 0) {
+            bot.runPressed--;
+        } else {
+            bot.stamina++;
+            if (bot.stamina > 30) bot.stamina = 30;
         }
+
         bot.instance.armed = bot.armed;
         bot.instance.immortal = bot.immortal;
+        bot.instance.stamina = bot.stamina;
     }, this);
 };
 
@@ -424,25 +437,17 @@ Engine.prototype.want = function(instance, action, params) {
     }
 
     if (action == 'move') {
-        bot.gear = bot.gear || 1;
+        bot.gear = bot.gear || 5;
         bot.angle = params.vector;
         bot.direction = instance.direction;
     }
 
-    if (action == 'gear') {
-        var dir = 0;
-        if (params == 1) {
-            bot.gear++;
-        } else if (params == -1) {
-            bot.gear--;
-        } else {
-            bot.gear = 0;
+    if (action == 'run') {
+        if (bot.stamina > 0) {
+            bot.gear += 6;
+            bot.stamina -= 5;
         }
-
-        bot.gear += dir;
-
-        if (bot.gear > 4) bot.gear = 4;
-        if (bot.gear < 0) bot.gear = 0;
+        bot.runPressed = 10;
 
         return bot.gear;
     }

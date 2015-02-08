@@ -50,8 +50,8 @@ protoBot.prototype.fire = function(direction) {
     return cp.want(this, 'fire');
 };
 
-protoBot.prototype.gear = function(gear) {
-    return cp.want(this, 'gear', gear);
+protoBot.prototype.run = function() {
+    return cp.want(this, 'run');
 };
 
 protoBot.prototype.pursue = function(e) {
