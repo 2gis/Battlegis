@@ -55,7 +55,7 @@ protoBot.prototype.run = function() {
 };
 
 protoBot.prototype.pursue = function(e) {
-    var enemy = this.enemy || e;
+    var enemy = e || this.enemy;
     var deltaX = this.x - enemy.x;
     var deltaY = this.y - enemy.y;
 
