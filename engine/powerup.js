@@ -9,10 +9,10 @@ exports.status = function(bot) {
     }, this);
 
     _.each(this.map.powerups, function(powerup) {
-        if (powerup.appearIn == 0 &&
+        // Наезд бота на поверап - взятие
+        if (powerup.appearIn == 0 && // Если поверап есть на карте
             Math.abs((powerup.x + powerup.width / 2) - (bot.x + bot.width / 2)) < (powerup.width + bot.width) / 2 && 
-            Math.abs((powerup.y + powerup.height / 2) - (bot.y + bot.height / 2)) < (powerup.height + bot.height) / 2 &&
-            _.isFinite(bot.powerups[powerup.type])) {
+            Math.abs((powerup.y + powerup.height / 2) - (bot.y + bot.height / 2)) < (powerup.height + bot.height) / 2) {
 
             bot.powerups[powerup.type] = 25;
             powerup.appearIn = powerup.timeout;

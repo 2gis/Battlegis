@@ -54,15 +54,14 @@ Engine.prototype.level = function(levelName) {
     }, this);
 
     // Спавним поверапы
-    this.map.powerups = this.map.powerups || [];
-    _.each(level.powerups, function(powerupCfg) {
+    this.map.powerups = _.map(level.powerups, function(powerupCfg) {
         var powerup = _.cloneDeep(powerupCfg);
         powerup = _.defaults(powerup, powerupCode.config[powerupCfg.type] || {});
 
         if (powerup.leading) powerup.appearIn = 0; // Ставим перк на карту сразу
         else powerup.appearIn = powerup.timeout;
 
-        this.map.powerups.push(powerup);
+        return powerup;
     }, this);
 
     this.success = level.success || _.noop;
@@ -299,8 +298,9 @@ Engine.prototype.playersPositions = function() {
         }
 
         // Тяга
-        var force = bot.nitro ? 8 : 0;
-        var traction = [bot.angle[0] * (bot.gear + force), bot.angle[1] * (bot.gear + force)];
+        var force = bot.nitro ? 2 : 0;
+        bot.gear += force;
+        var traction = [bot.angle[0] * bot.gear, bot.angle[1] * bot.gear];
         bot.vector[0] = (inertion * bot.vector[0] + traction[0]) / (inertion + 1);
         bot.vector[1] = (inertion * bot.vector[1] + traction[1]) / (inertion + 1);
         if (Math.abs(bot.vector[0] - traction[0]) < .1) bot.vector[0] = traction[0];
@@ -364,7 +364,8 @@ Engine.prototype.ai = function() {
     _.each(this.bots, function(bot) {
         if (bot.ticksToRespawn) return;
 
-        bot.gear = 0; // Сбрасываем движение
+        bot.gear = bot.gear || 0;
+        if (bot.gear > 0) bot.gear--; // Сбрасываем движение
         bot.nitro = false;
 
         bot.instance.frame = _.cloneDeep(frame);
@@ -482,7 +483,7 @@ Engine.prototype.want = function(instance, action, params) {
     if (action == 'move') {
         bot.angle = params.vector;
         bot.direction = instance.direction;
-        bot.gear = 1;
+        bot.gear = bot.gear || 1;
     }
 
     if (action == 'nitro') {

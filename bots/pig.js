@@ -1,4 +1,4 @@
-module.exports = function(map) {
+module.exports = function() {
     var moves = ['left', 'up', 'right', 'down'];
     this.movNum = this.movNum || 0;
 

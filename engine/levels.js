@@ -82,7 +82,7 @@ module.exports = {
         }],
         success: function(frame, map) {
             return frame && (frame.players[0].x < 1 || frame.players[0].y < 1 ||
-                frame.players[0].x > map.size.x - 1 || frame.players[0].y > map.size.y - 1);
+                frame.players[0].x > map.size.x - 6 || frame.players[0].y > map.size.y - 6);
         }
     },
 
@@ -214,33 +214,34 @@ module.exports = {
         map: {
             size: {x: 120, y: 100},
             spawnPoints: [{
-                x: 30,
-                y: 65,
+                x: 57.5,
+                y: 85,
                 direction: 'up'
             }, {
                 x: 57.5,
-                y: 45,
-                direction: 'right'
+                y: 10,
+                direction: 'down'
             }]
         },
         bots: [{
             name: 'you',
             spawn: 0
         }, {
-            name: 'chicken',
-            ai: 'noop',
-            spawn: 1,
-            immortal: 0,
-            lives: 1
+            name: 'aaaa',
+            ai: 'nitro',
+            spawn: 1
         }],
         powerups: [{
             type: '2gisDamage',
             leading: true,
-            x: 30,
-            y: 40
+            x: 57.5,
+            y: 47.5
         }],
         success: function(frame) {
-            return frame && frame.players[0]['2gisDamage'];
+            return frame && frame.players[0].powerups['2gisDamage'];
+        },
+        fail: function(frame) {
+            return frame && frame.players[1].powerups['2gisDamage'];
         }
     },
 
@@ -268,24 +269,20 @@ module.exports = {
         },
         bots: [{
             name: 'you',
-            spawn: 0,
-            lives: 3
+            spawn: 0
         }, {
             name: 'undermind',
             ai: 'undermind',
-            spawn: 1,
-            lives: 3
+            spawn: 1
         }, {
             name: 'undermind2',
             ai: 'undermind',
-            spawn: 2,
-            lives: 3
+            spawn: 2
         }, {
             name: 'undermind3',
             ai: 'undermind',
             spawn: 3,
-            immortal: 0,
-            lives: 3
+            immortal: 0
         }]
     }
 };

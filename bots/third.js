@@ -1,4 +1,4 @@
-module.exports = function(map) {
+module.exports = function() {
     var moves = ['left', 'up', 'right', 'down'];
     var method = moves[Math.round(Math.random() * 4)];
 
