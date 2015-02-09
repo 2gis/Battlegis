@@ -2,7 +2,7 @@ $(function() {
     $('.ai__send').on('click', function() {
         var code = window.editor.getSession().getValue(); // Весь текст
         game.restart();
-        game.replaceAI('you', code);
+        game.replaceAI('Твой танк', code);
     });
 
     window.editor.on('change', function(e) {

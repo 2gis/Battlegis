@@ -200,8 +200,6 @@ Engine.prototype.addBot = function(params) {
     });
 
     this.bots.push(bot);
-
-    gameHistory.bots[params.name] = {};
 };
 
 // Обсчет всей кинетики игры: пересчёт позиций всех объектов
@@ -476,8 +474,6 @@ Engine.prototype.want = function(instance, action, params) {
         // Отдача
         bot.vector[0] -= bot.angle[0] * 2;
         bot.vector[1] -= bot.angle[1] * 2;
-
-        gameHistory.bots[bot.name].lastFire = Date.now();
     }
 
     if (action == 'move') {

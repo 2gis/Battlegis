@@ -77,7 +77,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }],
         success: function(frame, map) {
@@ -101,7 +101,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'cow',
@@ -133,7 +133,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'cow',
@@ -166,7 +166,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'cow',
@@ -195,7 +195,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'chicken',
@@ -224,7 +224,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'aaaa',
@@ -268,7 +268,7 @@ module.exports = {
             }]
         },
         bots: [{
-            name: 'you',
+            name: 'Твой танк',
             spawn: 0
         }, {
             name: 'undermind',
@@ -279,7 +279,7 @@ module.exports = {
             ai: 'undermind',
             spawn: 2
         }, {
-            name: 'undermind3',
+            name: 'Грёбаный капец!',
             ai: 'undermind',
             spawn: 3,
             immortal: 0
