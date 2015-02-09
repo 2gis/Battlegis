@@ -360,9 +360,6 @@ Engine.prototype.powerupsStatus = powerupCode.status;
 // Выполнение ИИ функций ботов
 Engine.prototype.ai = function() {
     var frame = _.cloneDeep(_.last(gameHistory.frames));
-    frame.players = _.reject(frame.players, function(player) {
-        return player.ticksToRespawn;
-    })
 
     _.each(this.bots, function(bot) {
         if (bot.ticksToRespawn) return;
@@ -371,6 +368,9 @@ Engine.prototype.ai = function() {
         bot.nitro = false;
 
         bot.instance.frame = _.cloneDeep(frame);
+        bot.instance.frame.players = _.reject(bot.instance.frame.players, function(player) {
+            return player.ticksToRespawn || player.id == bot.id;
+        }, this);
         bot.instance.enemy = _.find(bot.instance.frame.players, function(obot) {
             return obot.id != bot.id;
         });

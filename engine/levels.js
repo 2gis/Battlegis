@@ -268,19 +268,24 @@ module.exports = {
         },
         bots: [{
             name: 'you',
-            spawn: 0
+            spawn: 0,
+            lives: 3
         }, {
-            name: 'chicken',
-            ai: 'chicken',
+            name: 'undermind',
+            ai: 'undermind',
             spawn: 1,
-            immortal: 0,
-            lives: 1
+            lives: 3
         }, {
-            name: 'chicken1',
-            ai: 'chicken',
+            name: 'undermind2',
+            ai: 'undermind',
             spawn: 2,
+            lives: 3
+        }, {
+            name: 'undermind3',
+            ai: 'undermind',
+            spawn: 3,
             immortal: 0,
-            lives: 1
+            lives: 3
         }]
     }
 };
