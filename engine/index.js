@@ -30,7 +30,7 @@ Engine.prototype = {};
 Engine.prototype.level = function(levelName) {
     this._levelName = levelName;
     var levels = require('./levels');
-    var level = levels[levelName];
+    var level = _.isObject(levelName) ? levelName : levels[levelName];
 
     if (!level) return;
 
