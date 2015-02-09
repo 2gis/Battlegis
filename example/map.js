@@ -206,6 +206,10 @@ $(function() {
         shells = {};
         game.replaceAI('Твой танк', window.editor.getSession().getValue());
     });
+
+    game.on('score', function(e) {
+        // console.log('e', e);
+    });
     setTimeout(function() {
         game.run();
         animationFrame();

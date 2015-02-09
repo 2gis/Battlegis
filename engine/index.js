@@ -251,6 +251,7 @@ Engine.prototype.shellsPositions = function() {
                                 bot.death++;
                                 bot.lives--;
                                 shell.parent.kill++;
+                                this.emit('score', this.getScore());
                             }
                         }
                         shell.bursted = true;
@@ -493,7 +494,13 @@ Engine.prototype.want = function(instance, action, params) {
     this.lastAction = action;
 };
 
+Engine.prototype.getScore = function() {
+    var score = _.map(this.bots, function(bot) {
+        return _.pick(bot, 'id', 'name', 'kill', 'death');
+    }, this);
 
+    return score;
+};
 
 // Возвращает состояния игры и последних кадров сражения
 Engine.prototype.get = function(params) {
@@ -516,9 +523,9 @@ Engine.prototype.on = function(eventName, callback) {
     listeners[eventName].push(callback);
 }
 
-Engine.prototype.emit = function(eventName) {
+Engine.prototype.emit = function(eventName, data) {
     _.each(listeners[eventName], function(listener) {
-        listener.call(this);
+        listener.call(this, data);
     }, this);
 }
 
