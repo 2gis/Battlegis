@@ -422,7 +422,7 @@ Engine.prototype.push = function() {
     var shells = _.reduce(this.shells, function(result, shell) {
         var pshell = _.pick(shell, ['id', 'x', 'y', 'k', 'bursted']);
 
-        pshell.shooter = shell.parent.name;
+        pshell.shooterId = shell.parent.id;
         pshell.vector = _.clone(shell.vector); // clone vector
 
         result.push(pshell);
@@ -465,7 +465,7 @@ Engine.prototype.want = function(instance, action, params) {
 
         this.shells = this.shells || [];
         this.shells.push({
-            id: bot.name + Date.now(),
+            id: Math.round(Math.random() * Number.MAX_SAFE_INTEGER),
             x: bot.x + bot.width * 0.5 + bot.angle[0] * bot.width * 0.5,
             y: bot.y + bot.height * 0.5 + bot.angle[1] * bot.height * 0.5,
             vector: bot.angle,
