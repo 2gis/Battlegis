@@ -3,6 +3,7 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var glob = require('glob').sync;
 var _ = require('lodash');
+var args = require('yargs').argv;
 
 var paths = {
     battlegis: [['config.js'], 'engine/*.js', 'bots/*.js']
@@ -11,10 +12,12 @@ var paths = {
 gulp.task('default', ['build', 'watch']);
 
 gulp.task('build', function() {
-    var b = browserify([
-        './example/client',
-        './example/map'
-    ]);
+    var entries = [
+        './example/client'
+    ];
+    if (!args.engine)
+        entries.push('./example/map');
+    var b = browserify(entries);
     var bots = glob('./bots/*.js');
 
     bots = _.difference(bots, ['./bots/proto.js']);

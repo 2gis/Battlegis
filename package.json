@@ -23,7 +23,8 @@
     "flat-glob": "0.0.1",
     "glob": "^4.3.5",
     "gulp": "^3.8.10",
-    "vinyl-source-stream": "^1.0.0"
+    "vinyl-source-stream": "^1.0.0",
+    "yargs": "^2.3.0"
   },
   "browser": "./example/client.js"
 }
