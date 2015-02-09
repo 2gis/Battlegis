@@ -181,8 +181,7 @@ Engine.prototype.addBot = function(params) {
         eachSegment: botUtils.eachSegment,
         health: 100,
         armed: 30,
-        gear: 0,
-        stamina: 30,
+        stamina: 60,
         powerups: {},
         immortal: _.isNumber(params.immortal) ? params.immortal : this.config.immortal,
         spawn: params.spawn,
@@ -294,12 +293,14 @@ Engine.prototype.playersPositions = function() {
 
         var inertion = 0; // Инерция танка, то есть неспособность менять направление движения
         var v2 = bot.vector[0] * bot.vector[0] + bot.vector[1] * bot.vector[1];
-        if (v2 > 4) {
-            inertion = v2 / 8; // на 1 и 2 передачи заносов нет
+        var speed = Math.sqrt(v2);
+        if (v2 > 10) {
+            inertion = v2 / 8; // на 1 и 2 скорости
         }
 
         // Тяга
-        var traction = [bot.angle[0] * bot.gear / 5, bot.angle[1] * bot.gear / 5];
+        var force = bot.nitro ? 8 : 0;
+        var traction = [bot.angle[0] * (bot.gear + force), bot.angle[1] * (bot.gear + force)];
         bot.vector[0] = (inertion * bot.vector[0] + traction[0]) / (inertion + 1);
         bot.vector[1] = (inertion * bot.vector[1] + traction[1]) / (inertion + 1);
         if (Math.abs(bot.vector[0] - traction[0]) < .1) bot.vector[0] = traction[0];
@@ -310,8 +311,14 @@ Engine.prototype.playersPositions = function() {
 
         if (x < 0) x = 0;
         if (y < 0) y = 0;
-        if (x > this.map.size.x - bot.width) x = this.map.size.x - bot.width;
-        if (y > this.map.size.y - bot.height) y = this.map.size.y - bot.height;
+        if (x > this.map.size.x - bot.width) {
+            x = this.map.size.x - bot.width;
+            bot.vector[0] = 0;
+        }
+        if (y > this.map.size.y - bot.height) {
+            y = this.map.size.y - bot.height;
+            bot.vector[1] = 0;
+        }
 
         // Пересечения ботов между собой (наезд друг на друга)
         var boom = _.any(this.bots, function(obot) {
@@ -321,7 +328,9 @@ Engine.prototype.playersPositions = function() {
                 Math.abs((obot.y + obot.height / 2) - (y + bot.height / 2)) < (obot.height + bot.height) / 2;
         });
 
-        if (!boom) {
+        if (boom) {
+            bot.vector = [0, 0]; // @TODO правильно обнулять // @TODO запилить физику
+        } else {
             bot.x = bot.instance.x = x;
             bot.y = bot.instance.y = y;
         }
@@ -329,18 +338,15 @@ Engine.prototype.playersPositions = function() {
         // Захват перков
         this.powerupsStatus(bot);
 
-        bot.gear -= 2;
-        if (bot.gear < 5) bot.gear = 5;
-
         bot.armed++;
         if (bot.armed > 30) bot.armed = 30;
 
         // Пока зажата кнопка ускорения, стамина не восстанавливается + ещё 10 тиков
-        if (bot.runPressed > 0) {
-            bot.runPressed--;
+        if (bot.nitroPressed > 0) {
+            bot.nitroPressed--;
         } else {
             bot.stamina++;
-            if (bot.stamina > 30) bot.stamina = 30;
+            if (bot.stamina > 60) bot.stamina = 60;
         }
 
         bot.instance.armed = bot.armed;
@@ -360,6 +366,9 @@ Engine.prototype.ai = function() {
 
     _.each(this.bots, function(bot) {
         if (bot.ticksToRespawn) return;
+
+        bot.gear = 0; // Сбрасываем движение
+        bot.nitro = false;
 
         bot.instance.frame = _.cloneDeep(frame);
         bot.instance.enemy = _.find(bot.instance.frame.players, function(obot) {
@@ -471,19 +480,17 @@ Engine.prototype.want = function(instance, action, params) {
     }
 
     if (action == 'move') {
-        bot.gear = bot.gear || 5;
         bot.angle = params.vector;
         bot.direction = instance.direction;
+        bot.gear = 1;
     }
 
-    if (action == 'run') {
+    if (action == 'nitro') {
         if (bot.stamina > 0) {
-            bot.gear += 6;
-            bot.stamina -= 5;
+            bot.nitro = true;
+            bot.stamina -= 10;
         }
-        bot.runPressed = 10;
-
-        return bot.gear;
+        bot.nitroPressed = 10;
     }
 
     this.lastAction = action;
