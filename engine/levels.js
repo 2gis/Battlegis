@@ -29,38 +29,6 @@ module.exports = {
             ai: 'drift'
         }]
     },
-    'canvas': {
-        map: {
-            size: {x: 120, y: 100},
-            spawnPoints: [{
-                x: 57.5,
-                y: 65,
-                direction: 'up'
-            }, {
-                x: 33,
-                y: 17,
-                direction: 'right'
-            }, {
-                x: 0,
-                y: 0,
-                direction: 'right'
-            }]
-        },
-        bots: [{
-            name: 'you',
-            ai: 'pig',
-            spawn: 0
-        }, {
-            name: 'dedal',
-            ai: 'dedal',
-            spawn: 1,
-            immortal: 0,
-            lives: 1
-        }],
-        success: function(frame) {
-            return false;
-        }
-    },
 
     // Доехать до края
     '1': {
@@ -83,6 +51,9 @@ module.exports = {
         success: function(frame, map) {
             return frame && (frame.players[0].x < 1 || frame.players[0].y < 1 ||
                 frame.players[0].x > map.size.x - 6 || frame.players[0].y > map.size.y - 6);
+        },
+        fail: function(frame, map) {
+            return this._gameTicks > 200;
         }
     },
 

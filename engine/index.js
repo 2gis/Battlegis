@@ -36,6 +36,7 @@ Engine.prototype.level = function(levelName) {
 
     this.bots = [];
     this.shells = [];
+    this._gameTicks = 0;
 
     if (level.map) {
         this.map = _.cloneDeep(level.map);
@@ -65,6 +66,7 @@ Engine.prototype.level = function(levelName) {
     }, this);
 
     this.success = level.success || _.noop;
+    this.fail = level.fail || _.noop;
     this.stage = 1;
 };
 
@@ -78,16 +80,25 @@ Engine.prototype.run = function(config) {
     var self = this;
 
     this.stage = 1;
+    this._gameTicks = 0;
 
     function tick() {
         // Расчет перемещений всех объектов на карте
-        if (this.success(_.last(gameHistory.frames), this.map)) {
-            this.stage = 10;
-            this.emit('levelComplete');
+        var lastFrame = _.last(gameHistory.frames);
+        if (this.stage < 10) {
+            if (this.success.call(this, lastFrame, this.map)) {
+                this.stage = 10;
+                this.emit('levelComplete');
+            } else if (this.fail.call(this, lastFrame, this.map)) {
+                this.stage = 10;
+                this.emit('levelFail');
+            }
         }
         if (this.stage < 10) this.ai();
         this.push();
         this.kinetic();
+
+        this._gameTicks++;
 
         this.tickTimeout = setTimeout(function() {
             tick.call(self);
@@ -429,11 +440,7 @@ Engine.prototype.push = function() {
         return result;
     }, []);
 
-    var powerups = _.map(this.map.powerups, function(powerup) {
-        var out = {};
-        out[powerup.type] = powerup.appearIn == 0;
-        return out;
-    });
+    var powerups = _.cloneDeep(this.map.powerups);
 
     // Сохраняем в историю (в кадр) все данные чтоб потом их можно было передать клиенту
     var frame = {

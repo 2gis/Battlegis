@@ -82,20 +82,22 @@ protoBot.prototype.locked = function(enemy, eps) {
 
 // Пытается убежать на максимальную диагональ
 protoBot.prototype.escape = function(from) {
+    this.enemy = from || this.enemy;
     from = from || this.enemy;
     
-    var deltaX = this.x - from.x;
-    var deltaY = this.y - from.y;
+    // Для учета краевых эффектов вводим эффективное положение бота
+    var effX = this.x; if (effX < 6) effX = 6; if (effX > this.map.size.x - 11) effX = 11;
+    var effY = this.y; if (effY < 6) effY = 6; if (effY > this.map.size.y - 11) effY = 11;
+    deltaX = effX - from.x;
+    deltaY = effY - from.y;
 
     if (Math.abs(deltaX) < Math.abs(deltaY)) {
         // Если ты справа от него и не у левой границы карты
-        if (deltaX < 0 && this.x > 5 && this.x < this.map.size.x - 10) this.left();
-        else if (from.x > this.map.size.x - 8) this.left(); // Противник у правой границы, пора валить
+        if (deltaX < 0) this.left();
         else this.right();
     } else {
         // Если ты снизу от него и не у верхней границы карты
-        if (deltaY < 0 && this.y > 5 && this.y < this.map.size.y - 10) this.left();
-        else if (from.y > this.map.size.y - 8) this.up(); // Противник у нижней границы, пора валить
+        if (deltaY < 0) this.up();
         else this.down();
     }
 };

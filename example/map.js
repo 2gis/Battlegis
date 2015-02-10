@@ -186,7 +186,7 @@ $(function() {
         requestAnimationFrame(animationFrame);
     }
 
-    var level = 7;
+    var level = 1;
     game.level(level);
 
     game.on('levelComplete', function(e) {
@@ -195,6 +195,15 @@ $(function() {
 
         shells = {};
         level++;
+        game.level(level);
+        game.replaceAI('Твой танк', window.editor.getSession().getValue());
+    });
+
+    game.on('levelFail', function(e) {
+        tanksLayer.removeChildren();
+        underlay.clear();
+
+        shells = {};
         game.level(level);
         game.replaceAI('Твой танк', window.editor.getSession().getValue());
     });
