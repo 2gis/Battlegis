@@ -5,7 +5,14 @@ exports.status = function(bot) {
     if (bot.health <= 0) return;
 
     _.each(bot.powerups, function(value, key) {
-        if (_.isFinite(bot.powerups[key]) && bot.powerups[key] > 0) bot.powerups[key]--;
+        if (_.isFinite(bot.powerups[key]) && bot.powerups[key] > 0) {
+            bot.powerups[key]--;
+        }
+
+        if (bot.powerups['2gisDamage'] > 0) {
+            bot.stamina = 60;
+            bot.armed = 60;
+        }
     }, this);
 
     _.each(this.map.powerups, function(powerup) {
@@ -14,7 +21,7 @@ exports.status = function(bot) {
             Math.abs((powerup.x + powerup.width / 2) - (bot.x + bot.width / 2)) < (powerup.width + bot.width) / 2 && 
             Math.abs((powerup.y + powerup.height / 2) - (bot.y + bot.height / 2)) < (powerup.height + bot.height) / 2) {
 
-            bot.powerups[powerup.type] = 25;
+            bot.powerups[powerup.type] = 50;
             powerup.appearIn = powerup.timeout;
         } else if (_.isFinite(powerup.appearIn) && powerup.appearIn > 0) {
             powerup.appearIn--;

@@ -388,6 +388,7 @@ Engine.prototype.ai = function() {
         bot.instance._ = _;
         bot.instance.map = _.cloneDeep(this.map);
         bot.instance.health = bot.health;
+        bot.instance.powerups = _.cloneDeep(bot.powerups);
 
         try {
             bot.ai.call(bot.instance);

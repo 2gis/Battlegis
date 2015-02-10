@@ -254,6 +254,12 @@ module.exports = {
             ai: 'undermind',
             spawn: 3,
             immortal: 0
+        }],
+        powerups: [{
+            type: '2gisDamage',
+            leading: true,
+            x: 57.5,
+            y: 47.5
         }]
     }
 };
