@@ -6,7 +6,7 @@ var _ = require('lodash');
 var args = require('yargs').argv;
 
 var paths = {
-    battlegis: [['config.js'], 'engine/*.js', 'bots/*.js']
+    battlegis: [['config.js'], 'engine/*.js', 'bots/*.js', 'example/*.js']
 };
 
 gulp.task('default', ['build', 'watch']);

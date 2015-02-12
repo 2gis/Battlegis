@@ -300,12 +300,8 @@ Engine.prototype.playersPositions = function() {
 
         if (bot.ticksToRespawn) return;
 
-        var inertion = 0; // Инерция танка, то есть неспособность менять направление движения
-        var v2 = bot.vector[0] * bot.vector[0] + bot.vector[1] * bot.vector[1];
-        var speed = Math.sqrt(v2);
-        if (v2 > 10) {
-            inertion = v2 / 8; // на 1 и 2 скорости
-        }
+        var inertion = 1; // Инерция танка, то есть неспособность менять направление движения
+        // var v2 = bot.vector[0] * bot.vector[0] + bot.vector[1] * bot.vector[1];
 
         // Тяга
         var force = bot.nitro ? 2 : 0;
@@ -339,6 +335,7 @@ Engine.prototype.playersPositions = function() {
         });
 
         if (boom) {
+            bot.gear = 0;
             bot.vector = [0, 0]; // @TODO правильно обнулять // @TODO запилить физику
         } else {
             bot.x = bot.instance.x = x;

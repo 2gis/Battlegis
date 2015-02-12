@@ -212,12 +212,48 @@ module.exports = {
             return frame && frame.players[0].powerups['2gisDamage'];
         },
         fail: function(frame) {
-            return frame && frame.players[1].powerups['2gisDamage'];
+            return this._gameTicks > 50 && frame && frame.players[1].powerups['2gisDamage'];
+        }
+    },
+
+    // Обогнать и взять 2gis damage по кривой
+    '7': {
+        map: {
+            size: {x: 120, y: 100},
+            spawnPoints: [{
+                x: 10,
+                y: 85,
+                direction: 'up'
+            }, {
+                x: 85,
+                y: 10,
+                direction: 'down'
+            }]
+        },
+        bots: [{
+            name: 'Твой танк',
+            spawn: 0
+        }, {
+            name: 'aaaa',
+            ai: 'drift',
+            spawn: 1
+        }],
+        powerups: [{
+            type: '2gisDamage',
+            leading: true,
+            x: 57.5,
+            y: 47.5
+        }],
+        success: function(frame) {
+            return frame && frame.players[0].powerups['2gisDamage'];
+        },
+        fail: function(frame) {
+            return this._gameTicks > 150 && frame && frame.players[1].powerups['2gisDamage'];
         }
     },
 
     // Бой против ботов
-    '7': {
+    '8': {
         map: {
             size: {x: 120, y: 100},
             spawnPoints: [{
