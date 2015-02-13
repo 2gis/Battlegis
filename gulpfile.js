@@ -28,6 +28,8 @@ gulp.task('build', function() {
         });
     });
 
+    b.require('events');
+
     return b
         .bundle()
         .pipe(source('battlegis.js'))

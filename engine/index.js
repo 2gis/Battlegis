@@ -1,30 +1,30 @@
 // direction = ['up', 'down', 'left', 'right'] - направление в котором смотрит танк
 
 var _ = require('lodash');
+var inherits = require('util').inherits;
+var EventEmitter = require('events').EventEmitter;
 var lineIntersect = require("line-intersect");
 var botUtils = require('./bot');
 
 var vutils = require('./vutils');
 
-var gameHistory = {};
-var listeners = {};
-
 var ProtoBot = require('../bots/proto');
-var Shell = require('./shell');
 
-var Engine = function(config) {
+inherits(Engine, EventEmitter);
+function Engine(config) {
+    EventEmitter.call(this);
+
     this.config = config || {};
+    this.history = {};
 
     _.defaults(this.config, require('./defaultConfig'));
 
     this.bots = []; // Массив дескрипторов загруженных на карту ботов, написанных игроками
     this.update = config.update || function() {};
-    gameHistory.bots = {};
-};
+    this.history.bots = {};
+}
 
 var powerupCode = require('./powerup');
-
-Engine.prototype = {};
 
 // Инициализация игры: загрузка ботов, конфига
 Engine.prototype.level = function(levelName) {
@@ -84,7 +84,7 @@ Engine.prototype.run = function(config) {
 
     function tick() {
         // Расчет перемещений всех объектов на карте
-        var lastFrame = _.last(gameHistory.frames);
+        var lastFrame = _.last(this.history.frames);
         if (this.stage < 10) {
             if (this.success.call(this, lastFrame, this.map)) {
                 this.stage = 10;
@@ -366,7 +366,7 @@ Engine.prototype.powerupsStatus = powerupCode.status;
 
 // Выполнение ИИ функций ботов
 Engine.prototype.ai = function() {
-    var frame = _.cloneDeep(_.last(gameHistory.frames));
+    var frame = _.cloneDeep(_.last(this.history.frames));
 
     _.each(this.bots, function(bot) {
         if (bot.ticksToRespawn) return;
@@ -412,9 +412,9 @@ Engine.prototype.replaceAI = function(name, str) {
     }
 };
 
-// Запоминает новый кадр сражения в массив gameHistory.frames
+// Запоминает новый кадр сражения в массив this.history.frames
 Engine.prototype.push = function() {
-    gameHistory.frames = gameHistory.frames || [];
+    this.history.frames = this.history.frames || [];
 
     var historyKeys = ['id', 'name', 'x', 'y', 'kill', 'death', 'direction', 'health', 'ticksToRespawn', 'immortal'];
 
@@ -448,7 +448,7 @@ Engine.prototype.push = function() {
         time: Date.now()
     };
 
-    gameHistory.frames.push(frame);
+    this.history.frames.push(frame);
     this.update(this.get({
         since: frame.time - 1 // вернёт только последний фрейм
     }));
@@ -511,7 +511,7 @@ Engine.prototype.getScore = function() {
 Engine.prototype.get = function(params) {
     if (!this.map) return;
 
-    var frames = _.filter(gameHistory.frames, function(frame) {
+    var frames = _.filter(this.history.frames, function(frame) {
         return frame.time > params.since;
     });
 
@@ -522,16 +522,5 @@ Engine.prototype.get = function(params) {
         frames: frames
     };
 };
-
-Engine.prototype.on = function(eventName, callback) {
-    listeners[eventName] = listeners[eventName] || [];
-    listeners[eventName].push(callback);
-}
-
-Engine.prototype.emit = function(eventName, data) {
-    _.each(listeners[eventName], function(listener) {
-        listener.call(this, data);
-    }, this);
-}
 
 module.exports = Engine;
