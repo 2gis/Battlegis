@@ -421,6 +421,7 @@ Engine.prototype.replaceAI = function(name, str) {
     });
 
     if (bot) {
+        str = 'var tank = this, map = this.frame;' + str;
         var oldAI = bot.ai;
         try {
             if (isServer) {
