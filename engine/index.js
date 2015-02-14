@@ -11,7 +11,7 @@ var botUtils = require('./bot');
 
 var vutils = require('./vutils');
 
-var ProtoBot = require('../bots/proto');
+var ProtoBot = require('./protoBot');
 
 inherits(Engine, EventEmitter);
 function Engine(config) {
