@@ -7,6 +7,7 @@ var cp;
 var protoBot = function(params) {
     params = params || {};
 
+    this.id = params.id;
     this.x = params.x;
     this.y = params.y;
     this.width = params.width;

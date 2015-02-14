@@ -1,5 +1,8 @@
 // direction = ['up', 'down', 'left', 'right'] - направление в котором смотрит танк
 
+var isServer = typeof window == 'undefined';
+var vm = require('vm');
+
 var _ = require('lodash');
 var inherits = require('util').inherits;
 var EventEmitter = require('events').EventEmitter;
@@ -117,6 +120,7 @@ Engine.prototype.stop = function() {
 Engine.prototype.spawn = function(params) {
     var ai = params.ai || 'noop';
     var botAI = require('../bots/' + ai + '.js');
+
     var botParams = _.extend({}, params, {
         ai: botAI,
         kill: params.kill || 0,
@@ -200,6 +204,7 @@ Engine.prototype.addBot = function(params) {
 
     this._chooseSpawnPoint(bot);
     bot.instance = new ProtoBot({
+        id: bot.id,
         x: bot.x,
         y: bot.y,
         width: bot.width,
@@ -209,6 +214,12 @@ Engine.prototype.addBot = function(params) {
             want: this.want.bind(this)
         }
     });
+
+    if (isServer) {
+        var str = bot.ai.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1]; // Выдираем тело функции в строку
+        bot.instance = vm.createContext(bot.instance);
+        bot.ai = new vm.Script(str);
+    }
 
     this.bots.push(bot);
 };
@@ -388,7 +399,15 @@ Engine.prototype.ai = function() {
         bot.instance.powerups = _.cloneDeep(bot.powerups);
 
         try {
-            bot.ai.call(bot.instance);
+            // На сервере исполняем ai в виртуальной машине
+            if (isServer) {
+                bot.ai.runInContext(bot.instance, {
+                    filename: bot.name + '.bot',
+                    timeout: this.config.aiTimeout
+                });
+            } else {
+                bot.ai.call(bot.instance);
+            }
         } catch (e) {
             console.log('ai[%s] call: %s', bot.name, e.stack);
         }
@@ -404,7 +423,11 @@ Engine.prototype.replaceAI = function(name, str) {
     if (bot) {
         var oldAI = bot.ai;
         try {
-            bot.ai = new Function(str);
+            if (isServer) {
+                bot.ai = new vm.Script(str);
+            } else {
+                bot.ai = new Function(str);
+            }
         } catch (e) {
             console.log('Error! Bot ' + name + ' ai was not replaced');
             bot.ai = oldAI;
@@ -457,7 +480,7 @@ Engine.prototype.push = function() {
 // Реквест бота на выполнение какого-то действия, которое может быть и не доступно (например второй выстрел сразу после первого)
 Engine.prototype.want = function(instance, action, params) {
     var bot = _.find(this.bots, function(bot) {
-        return instance === bot.instance;
+        return instance.id === bot.id;
     });
 
     if (action == 'fire') {
