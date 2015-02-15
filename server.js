@@ -27,12 +27,57 @@ var server = app.listen(config.port || 3009, function () {
     console.log('Tanks app listening at http://%s:%s', host, port);
 });
 
-io.on('connection', function (socket, str) {
-    socket.on('enter', function (data) {
-        roomManager
-            .create(data.roomName)
-            .on('frame', function(frame) {
-                socket.emit('frame', frame);
+io.on('connection', function (socket) {
+    function joinRoom(params) {
+        params = params || {};
+        var room = roomManager.getRoom(params.id);
+
+        if (!room) throw new Error('room with id ' + params.id + 'not found');
+
+        room.join(params.name, params.sessionId);
+
+        socket.emit('roomJoined', {
+            id: room.id,
+            map: room.map
+        });
+
+        room.on('frame', function(frame) {
+            socket.emit('frame', frame);
+        });
+    };
+
+    // Создать комнату
+    socket.on('create', function (data) {
+        data = data || {};
+        var room = roomManager.create();
+
+        if (room) {
+            socket.emit('roomCreated', {
+                id: room.id
             });
+
+            data.id = room.id;
+
+            joinRoom(data);
+        }
+    });
+
+    // Зайти в комнату спектатором
+    socket.on('join', joinRoom);
+
+    // Попробовать запустить бота на карту (если есть слоты)
+    socket.on('fight', function (params) {
+        var room = roomManager.getRoom(params.id);
+
+        var position = room.fight(params.name, params.sessionId, params.ai);
+        console.log('params', params);
+
+        if (position) {
+            socket.emit('queue', {
+                position: position
+            });
+        } else {
+            socket.emit('arenaJoined');
+        }
     });
 });

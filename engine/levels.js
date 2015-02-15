@@ -25,17 +25,16 @@ module.exports = {
             spawn: 0
         }, {
             name: 'undermind',
-            ai: 'chicken',
+            ai: 'undermind',
             spawn: 1
         }, {
             name: 'undermind2',
-            ai: 'chicken',
+            ai: 'undermind',
             spawn: 2
         }, {
             name: 'Грёбаный капец!',
-            ai: 'chicken',
-            spawn: 3,
-            immortal: 0
+            ai: 'undermind',
+            spawn: 3
         }],
         powerups: [{
             type: '2gisDamage',

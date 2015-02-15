@@ -2,8 +2,6 @@ var _ = require('lodash');
 
 var vector = require('../engine/vutils').vector;
 
-var cp;
-
 var protoBot = function(params) {
     params = params || {};
 
@@ -13,7 +11,7 @@ var protoBot = function(params) {
     this.width = params.width;
     this.height = params.height;
     this.name = params.name;
-    cp = params.cp;
+    this.cp = params.cp;
 };
 
 protoBot.prototype = {};
@@ -24,7 +22,7 @@ protoBot.prototype.move = function(direction) {
 
     this.direction = direction;
 
-    cp.want(this, 'move', {
+    this.cp.want(this, 'move', {
         direction: direction,
         vector: vector(direction)
     });
@@ -48,11 +46,11 @@ protoBot.prototype.down = function() {
 
 // Выстрел в точку с координатами x, y
 protoBot.prototype.fire = function(direction) {
-    return cp.want(this, 'fire');
+    return this.cp.want(this, 'fire');
 };
 
 protoBot.prototype.nitro = function() {
-    return cp.want(this, 'nitro');
+    return this.cp.want(this, 'nitro');
 };
 
 protoBot.prototype.pursue = function(e) {
@@ -89,8 +87,8 @@ protoBot.prototype.escape = function(from) {
     // Для учета краевых эффектов вводим эффективное положение бота
     var effX = this.x; if (effX < 6) effX = 6; if (effX > this.map.size.x - 11) effX = 11;
     var effY = this.y; if (effY < 6) effY = 6; if (effY > this.map.size.y - 11) effY = 11;
-    deltaX = effX - from.x;
-    deltaY = effY - from.y;
+    var deltaX = effX - from.x;
+    var deltaY = effY - from.y;
 
     if (Math.abs(deltaX) < Math.abs(deltaY)) {
         // Если ты справа от него и не у левой границы карты

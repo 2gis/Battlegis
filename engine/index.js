@@ -182,7 +182,7 @@ Engine.prototype.add = function(params) {
     var direction = params.direction || 'up';
 
     var bot = {
-        id: params.id || Math.round(Math.random() * Number.MAX_SAFE_INTEGER),
+        id: params.id || Math.round(Math.random() * Number.MAX_SAFE_INTEGER / 10),
         ai: params.ai,
         index: this.bots.length,
         name: params.name,
@@ -217,7 +217,7 @@ Engine.prototype.add = function(params) {
     });
 
     if (isServer) {
-        var str = bot.ai.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1]; // Выдираем тело функции в строку
+        var str = _.isFunction(bot.ai) ? bot.ai.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1] : bot.ai; // Выдираем тело функции в строку
         bot.instance = vm.createContext(bot.instance);
         bot.ai = new vm.Script(str);
     }
@@ -234,7 +234,7 @@ Engine.prototype.remove = function(bot) {
         return bot.name == name;
     }, this);
 
-    return length - this.bot.length - 1; // 0 если был удалён 1 бот
+    return length - this.bots.length - 1; // 0 если был удалён 1 бот
 };
 
 // Обсчет всей кинетики игры: пересчёт позиций всех объектов
@@ -502,6 +502,12 @@ Engine.prototype.want = function(instance, action, params) {
         return instance.id === bot.id;
     });
 
+    if (!bot) {
+        console.log('this.bots', _.pluck(this.bots, 'id'), instance.id, this.roomId);
+        // throw new Error('Bot with id "' + instance.id + '" not found');
+        return;
+    }
+
     if (action == 'fire') {
         bot.immortal = 0; // Выключаем бессмертие после первой попытки выстрелить
 
@@ -511,7 +517,7 @@ Engine.prototype.want = function(instance, action, params) {
 
         this.shells = this.shells || [];
         this.shells.push({
-            id: Math.round(Math.random() * Number.MAX_SAFE_INTEGER),
+            id: Math.round(Math.random() * Number.MAX_SAFE_INTEGER / 10),
             x: bot.x + bot.width * 0.5 + bot.angle[0] * bot.width * 0.5,
             y: bot.y + bot.height * 0.5 + bot.angle[1] * bot.height * 0.5,
             vector: bot.angle,
