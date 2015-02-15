@@ -69,8 +69,8 @@ io.on('connection', function (socket) {
     socket.on('fight', function (params) {
         var room = roomManager.getRoom(params.id);
 
-        var position = room.fight(params.name, params.sessionId, params.ai);
         console.log('params', params);
+        var position = room.fight(params.name, params.sessionId, params.ai);
 
         if (position) {
             socket.emit('queue', {

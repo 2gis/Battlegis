@@ -126,7 +126,7 @@ Engine.prototype.spawn = function(params) {
         ai: botAI,
         kill: params.kill || 0,
         death: params.death || 0,
-        direction: this.map.spawnPoints[params.spawn || 0].direction || [0, -1],
+        direction: this.map.spawnPoints[params.spawn || 0].direction || 'up',
         lives: params.lives || Infinity
     });
 
@@ -149,10 +149,30 @@ Engine.prototype._telefrag = function(bot) {
     }, this);
 };
 
-// Ищет подходящее для спавна случайное место
+// Ищет подходящее для спавна случайное место: либо заданный спавн, либо случайный из свободных, либо просто случайный из всех
 Engine.prototype._chooseSpawnPoint = function(bot) {
-    var spawnPointNum = _.isNumber(bot.spawn) ? bot.spawn : _.random(this.map.spawnPoints.length - 1);
-    var spawn = this.map.spawnPoints[spawnPointNum];
+    var spawnPointNum;
+    var spawn;
+
+    if (_.isNumber(bot.spawn)) {
+        spawnPointNum = bot.spawn;
+        spawn = this.map.spawnPoints[spawnPointNum];
+    } else {
+        var freePoints = _.filter(this.map.spawnPoints, function(point) {
+            return !_.any(this.bots, function(bot) {
+                return point.x >= bot.x && point.x <= bot.x + bot.width && point.y >= bot.y && point.y <= bot.y + bot.height;
+            }, this);
+        }, this);
+
+        if (freePoints.length) {
+            spawnPointNum = _.random(0, freePoints.length - 1);
+            spawn = freePoints[spawnPointNum];
+        } else {
+            spawnPointNum = _.random(0, this.map.spawnPoints.length - 1);
+            spawn = this.map.spawnPoints[spawnPointNum];
+        }
+    }
+
     bot.x = spawn.x;
     bot.y = spawn.y;
 
@@ -199,7 +219,7 @@ Engine.prototype.add = function(params) {
         stamina: 60,
         powerups: {},
         immortal: _.isNumber(params.immortal) ? params.immortal : this.config.immortal,
-        spawn: params.spawn || 0,
+        spawn: params.spawn,
         lives: params.lives || Infinity
     };
 
@@ -502,11 +522,7 @@ Engine.prototype.want = function(instance, action, params) {
         return instance.id === bot.id;
     });
 
-    if (!bot) {
-        console.log('this.bots', _.pluck(this.bots, 'id'), instance.id, this.roomId);
-        // throw new Error('Bot with id "' + instance.id + '" not found');
-        return;
-    }
+    if (!bot) throw new Error('Bot with id "' + instance.id + '" not found');
 
     if (action == 'fire') {
         bot.immortal = 0; // Выключаем бессмертие после первой попытки выстрелить

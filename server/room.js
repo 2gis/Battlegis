@@ -52,8 +52,7 @@ Room.prototype.disconnect = function(name, pass) {
 };
 
 // Спектатор с именем name пытается присоединиться к игре
-Room.prototype.fight = function(name, pass) {
-    console.log('this.users', this.users);
+Room.prototype.fight = function(name, pass, ai) {
     var user = this.users[name];
     if (!user) throw new Error('No user ' + name + ' found in the room ' + this.name);
     if (!pass || user.pass != pass) throw new Error('Incorrect sessionId for user ' + name);
@@ -64,12 +63,15 @@ Room.prototype.fight = function(name, pass) {
 
     if (players.length < this.config.maxPlayers) {
         // Находим нашего бота, которого можно исключить в пользу юзерского бота
-        var tempBot = _.find(this.game.bots, function(bot) {
-            return bot; // ?
-        });
+        // var tempBot = _.find(this.game.bots, function(bot) {
+        //     return bot; // ?
+        // });
 
-        this.game.remove(tempBot);
-        this.game.add(this.users[name]);
+        // this.game.remove(tempBot);
+        this.game.add({
+            name: name,
+            ai: ai
+        });
         this.users[name].mode = 'player';
     } else {
         // Число игроков уже дофига, ограничиваем текущий матч 3 минутами

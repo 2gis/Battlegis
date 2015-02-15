@@ -1,46 +1,42 @@
 module.exports = {
     'arena': {
         map: {
-            size: {x: 120, y: 100},
-            spawnPoints: [{
-                x: 20,
-                y: 20,
-                direction: 'up'
-            }, {
-                x: 20,
-                y: 75,
-                direction: 'right'
-            }, {
-                x: 95,
-                y: 75,
-                direction: 'right'
-            }, {
-                x: 95,
-                y: 20,
-                direction: 'right'
-            }]
+            size: {x: 160, y: 160},
+            spawnPoints: [
+                {x: 10, y: 10},
+                {x: 20, y: 20},
+                {x: 30, y: 30},
+                {x: 40, y: 40},
+                {x: 50, y: 50},
+                {x: 60, y: 60},
+                {x: 70, y: 70},
+                {x: 90, y: 90},
+                {x: 100, y: 100},
+                {x: 110, y: 110},
+                {x: 120, y: 120},
+                {x: 130, y: 130},
+                {x: 140, y: 140},
+                {x: 150, y: 150},
+            ]
         },
         bots: [{
-            name: 'Твой танк',
-            spawn: 0
+            name: 'some',
+            ai: 'chicken'
         }, {
             name: 'undermind',
-            ai: 'undermind',
-            spawn: 1
+            ai: 'undermind'
         }, {
             name: 'undermind2',
-            ai: 'undermind',
-            spawn: 2
+            ai: 'undermind'
         }, {
             name: 'Грёбаный капец!',
-            ai: 'undermind',
-            spawn: 3
+            ai: 'undermind'
         }],
         powerups: [{
             type: '2gisDamage',
             leading: true,
-            x: 57.5,
-            y: 47.5
+            x: 77.5,
+            y: 77.5
         }]
     },
 
