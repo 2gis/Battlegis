@@ -1,32 +1,47 @@
 module.exports = {
-    'test': {
+    'arena': {
         map: {
-            size: {x: 80, y: 60},
+            size: {x: 120, y: 100},
             spawnPoints: [{
-                x: 0,
-                y: 0
+                x: 20,
+                y: 20,
+                direction: 'up'
             }, {
-                x: 195,
-                y: 0
+                x: 20,
+                y: 75,
+                direction: 'right'
             }, {
-                x: 195,
-                y: 155
+                x: 95,
+                y: 75,
+                direction: 'right'
             }, {
-                x: 0,
-                y: 155
+                x: 95,
+                y: 20,
+                direction: 'right'
             }]
         },
         bots: [{
-            name: 'dedal',
-            spawnPoint: 0
+            name: 'Твой танк',
+            spawn: 0
         }, {
-            name: 'dedal'
+            name: 'undermind',
+            ai: 'chicken',
+            spawn: 1
         }, {
-            name: 'another dedal',
-            ai: 'dedal'
+            name: 'undermind2',
+            ai: 'chicken',
+            spawn: 2
         }, {
-            name: 'weee',
-            ai: 'drift'
+            name: 'Грёбаный капец!',
+            ai: 'chicken',
+            spawn: 3,
+            immortal: 0
+        }],
+        powerups: [{
+            type: '2gisDamage',
+            leading: true,
+            x: 57.5,
+            y: 47.5
         }]
     },
 

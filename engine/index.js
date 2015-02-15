@@ -89,7 +89,7 @@ Engine.prototype.run = function(config) {
         // Расчет перемещений всех объектов на карте
         var lastFrame = _.last(this.history.frames);
         if (this.stage < 10) {
-            if (this.success.call(this, lastFrame, this.map)) {
+            if (this.success.call(this, lastFrame, this.map) || this._timeout <= 0) {
                 this.stage = 10;
                 this.emit('levelComplete');
             } else if (this.fail.call(this, lastFrame, this.map)) {
@@ -102,6 +102,7 @@ Engine.prototype.run = function(config) {
         this.kinetic();
 
         this._gameTicks++;
+        if (this._timeout) this._timeout--; // Условие выхода из игры по времени
 
         this.tickTimeout = setTimeout(function() {
             tick.call(self);
@@ -129,7 +130,7 @@ Engine.prototype.spawn = function(params) {
         lives: params.lives || Infinity
     });
 
-    this.addBot(botParams);
+    this.add(botParams);
 };
 
 // Убивает всех в прямоугольнике
@@ -177,7 +178,7 @@ Engine.prototype.respawn = function(bot) {
 };
 
 // Добавление бота в игру
-Engine.prototype.addBot = function(params) {
+Engine.prototype.add = function(params) {
     var direction = params.direction || 'up';
 
     var bot = {
@@ -190,16 +191,16 @@ Engine.prototype.addBot = function(params) {
         direction: direction,
         width: 5,
         height: 5,
-        kill: params.kill,
-        death: params.death,
+        kill: params.kill || 0,
+        death: params.death || 0,
         eachSegment: botUtils.eachSegment,
         health: 100,
         armed: 30,
         stamina: 60,
         powerups: {},
         immortal: _.isNumber(params.immortal) ? params.immortal : this.config.immortal,
-        spawn: params.spawn,
-        lives: params.lives
+        spawn: params.spawn || 0,
+        lives: params.lives || Infinity
     };
 
     this._chooseSpawnPoint(bot);
@@ -222,6 +223,18 @@ Engine.prototype.addBot = function(params) {
     }
 
     this.bots.push(bot);
+};
+
+// Удалить бота из игры
+Engine.prototype.remove = function(bot) {
+    var name = bot.name || bot;
+    var length = this.bots.length;
+
+    _.remove(this.bots, function(bot) {
+        return bot.name == name;
+    }, this);
+
+    return length - this.bot.length - 1; // 0 если был удалён 1 бот
 };
 
 // Обсчет всей кинетики игры: пересчёт позиций всех объектов
@@ -375,6 +388,10 @@ Engine.prototype.playersPositions = function() {
 
 Engine.prototype.powerupsStatus = powerupCode.status;
 
+Engine.prototype.timeout = function(ms) {
+    this._timeout = ms;
+};
+
 // Выполнение ИИ функций ботов
 Engine.prototype.ai = function() {
     var frame = _.cloneDeep(_.last(this.history.frames));
@@ -476,6 +493,7 @@ Engine.prototype.push = function() {
     this.update(this.get({
         since: frame.time - 1 // вернёт только последний фрейм
     }));
+    this.emit('frame', frame);
 };
 
 // Реквест бота на выполнение какого-то действия, которое может быть и не доступно (например второй выстрел сразу после первого)

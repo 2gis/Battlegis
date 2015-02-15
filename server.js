@@ -2,14 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser'); // Для распарсивания POST-запросов
 var app = express();
 
-var auth = require('./auth');
-var Battlegis = require('./engine');
 var config = require('./config');
-
-// var game = new Battlegis(config);
-// game.level(6);
-// game.run();
-// game.stop();
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -24,10 +17,10 @@ app.post('/ai', function (req, res) {
     var js = req.param('js');
 
     console.log('AI request for ' + name);
-    auth(name, pass).resolve(function() {
-        engine.replaceAI(req.param('name'), req.param('js'));
-        console.log('AI replaced');
-    });
+    // auth(name, pass).resolve(function() {
+    //     engine.replaceAI(req.param('name'), req.param('js'));
+    //     console.log('AI replaced');
+    // });
     
 
     res.json();
@@ -46,6 +39,7 @@ app.get('/api', function (req, res) {
 });
 
 app.use('/', express.static(__dirname + '/example'));
+app.use('/game', require('./server/roomManager'));
 app.use('/build', express.static(__dirname + '/build'));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
 
