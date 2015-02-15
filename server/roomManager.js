@@ -1,14 +1,24 @@
-var Room = require('../room');
+var Room = require('./room');
 var config = require('../config');
+var inherits = require('util').inherits;
+var EventEmitter = require('events').EventEmitter;
 
-module.exports = function(req, res) {
-    var room = new Room(config);
+inherits(RoomManager, EventEmitter);
 
-    room.on('frame', function(frame) {
-        console.log('frame', frame.players[1].x, frame.players[1].y);
-    });
+function RoomManager() {
+    this.rooms = [];
+}
 
-    res.json({
-        status: 'ok'
-    });
+RoomManager.prototype.create = function(roomName) {
+    roomName = roomName || Math.random() * Math.MAX_SAFE_INTEGER;
+
+    var room = new Room();
+
+    return this.rooms[roomName] = room;
 };
+
+RoomManager.prototype.dispose = function(roomName) {
+    this.rooms[roomName] && this.rooms[roomName].dispose();
+};
+
+module.exports = RoomManager;

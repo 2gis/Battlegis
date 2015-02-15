@@ -2,10 +2,11 @@ var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 
-var Battlegis = require('./engine');
-var config = require('./config');
+var Battlegis = require('../engine');
+var config = require('../config');
 
 function Room(params) {
+    params = params || {};
     this.name = params.name || 'room' + Math.random() * Math.MAX_SAFE_INTEGER;
 
     this.config = params.config || config;
