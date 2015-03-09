@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/2gis/Battlegis.svg?branch=master)](https://travis-ci.org/2gis/Battlegis)
+
 # Движок для создания танков на js
 
 ## API танков
