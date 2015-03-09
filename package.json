@@ -24,6 +24,8 @@
     "flat-glob": "0.0.1",
     "glob": "^4.3.5",
     "gulp": "^3.8.10",
+    "gulp-mocha": "^2.0.0",
+    "sinon": "^1.13.0",
     "vinyl-source-stream": "^1.0.0"
   },
   "browser": "./example/client.js"

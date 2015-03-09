@@ -23,7 +23,8 @@ function getType(expAngle, realAngle) {
 };
 
 exports.eachSegment = function(callback, thisArg) {
-    var bot = this;
+    var bot = this || {};
+    thisArg = thisArg || this;
 
     type = getType([0, -1], bot.angle);
     callback.call(thisArg, [bot.x, bot.y], [bot.x + bot.width, bot.y], type);

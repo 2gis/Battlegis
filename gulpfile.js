@@ -3,6 +3,7 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var glob = require('glob').sync;
 var _ = require('lodash');
+var mocha = require('gulp-mocha');
 
 var paths = {
     battlegis: [['config.js'], 'engine/*.js', 'bots/*.js', 'example/*.js']
@@ -40,6 +41,11 @@ gulp.task('build.engine', _.partial(build, true));
 gulp.task('build.client', _.partial(build, false));
 
 gulp.task('build', ['build.engine', 'build.client']);
+ 
+gulp.task('test', function () {
+    return gulp.src('./**/*.spec.js', {read: false})
+        .pipe(mocha());
+});
 
 gulp.task('watch', function() {
     gulp.watch(paths.battlegis, ['build.client']);
