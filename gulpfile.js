@@ -4,6 +4,7 @@ var source = require('vinyl-source-stream');
 var glob = require('glob').sync;
 var _ = require('lodash');
 var mocha = require('gulp-mocha');
+var babelify = require("babelify");
 
 var paths = {
     battlegis: [['config.js'], 'engine/*.js', 'bots/*.js', 'example/*.js']
@@ -11,11 +12,11 @@ var paths = {
 
 gulp.task('default', ['build', 'watch']);
 
-function build(engine) {
+function build(engineOnly) {
     var entries = [
         './example/client'
     ];
-    if (!engine)
+    if (!engineOnly)
         entries.push('./example/map');
 
     var b = browserify(entries);
@@ -29,11 +30,11 @@ function build(engine) {
         });
     });
 
-    b.require('events');
-
     return b
+        .require('events')
+        .transform(babelify)
         .bundle()
-        .pipe(source(engine ? 'engine.js' : 'battlegis.js'))
+        .pipe(source(engineOnly ? 'engine.js' : 'battlegis.js'))
         .pipe(gulp.dest('./build/'));
 }
 

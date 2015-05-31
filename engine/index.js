@@ -1,3 +1,4 @@
+"use strict"
 // direction = ['up', 'down', 'left', 'right'] - направление в котором смотрит танк
 
 var isServer = typeof window == 'undefined';
@@ -23,7 +24,7 @@ function Engine(config) {
     _.defaults(this.config, require('./defaultConfig'));
 
     this.bots = []; // Массив дескрипторов загруженных на карту ботов, написанных игроками
-    this.update = config.update || function() {};
+    this.update = config.update || _.noop;
     this.history.bots = {};
 }
 
@@ -80,8 +81,6 @@ Engine.prototype.restart = function() {
 
 // Запуск игры
 Engine.prototype.run = function(config) {
-    var self = this;
-
     this.stage = 1;
     this._gameTicks = 0;
 
@@ -104,13 +103,11 @@ Engine.prototype.run = function(config) {
         this._gameTicks++;
         if (this._timeout) this._timeout--; // Условие выхода из игры по времени
 
-        this.tickTimeout = setTimeout(function() {
-            tick.call(self);
-        }, this.config.tick);
+        this.tickTimeout = setTimeout(tick.bind(this), this.config.tick);
     }
 
     this.push();
-    tick.call(self);
+    tick.call(this);
 };
 
 Engine.prototype.stop = function() {
@@ -321,8 +318,8 @@ Engine.prototype.shellsPositions = function() {
 
         // считаем насколько мы скорректировали пулю/
         // а точнее насколько меньший путь проделала пуля
-        var kx = (x - shell.x)/(wantX - shell.x);
-        var ky = (y - shell.y)/(wantY - shell.y);
+        let kx = (x - shell.x)/(wantX - shell.x);
+        let ky = (y - shell.y)/(wantY - shell.y);
         shell.k = isFinite(kx) ? kx : ky;
 
         shell.x = x;
@@ -339,13 +336,11 @@ Engine.prototype.shellsPositions = function() {
 
 // Обновление позиции всех танков
 Engine.prototype.playersPositions = function() {
-    _.each(this.bots, function(bot) {
+    const inertion = 1; // Инерция танка, то есть неспособность менять направление движения
+
+    this.bots.forEach((bot) => {
         if (bot.immortal) bot.immortal--;
-
         if (bot.ticksToRespawn) return;
-
-        var inertion = 1; // Инерция танка, то есть неспособность менять направление движения
-        // var v2 = bot.vector[0] * bot.vector[0] + bot.vector[1] * bot.vector[1];
 
         // Тяга
         var force = bot.nitro ? 2 : 0;
@@ -403,7 +398,7 @@ Engine.prototype.playersPositions = function() {
         bot.instance.armed = bot.armed;
         bot.instance.immortal = bot.immortal;
         bot.instance.stamina = bot.stamina;
-    }, this);
+    });
 };
 
 Engine.prototype.powerupsStatus = powerupCode.status;
